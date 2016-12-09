@@ -1,0 +1,27 @@
+version: '2'
+
+volumes:
+  gems:
+
+services:
+  web:
+    build: ./backend
+    environment:
+      DATABASE_URL: "postgres://user:mypass@dbhost"
+    links:
+      - db:dbhost
+    ports:
+      - "3000:3000"
+    volumes:
+      - gems:/usr/local/bundle
+      - ./backend:/usr/src/app
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+
+  db:
+    build:
+      context: ./dockerfiles
+      dockerfile: postgres-ptbr.dkfl
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_DB: app_development
